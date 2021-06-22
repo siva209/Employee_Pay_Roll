@@ -9,12 +9,7 @@ public class EmployeePayrollService {
 	public EmployeePayrollService() {
 		employeeList = new ArrayList<Employee>(); 
 	}
-	public static void main(String[] args) {
-		EmployeePayrollService eService = new EmployeePayrollService();
-		Scanner consoleInput = new Scanner(System.in);
-		eService.readEmployeePayrollData(consoleInput);
-		eService.writeData();
-	}
+	
 	private void writeData() {
 		System.out.println("Writting data of employee to console: "+employeeList);
 	}
@@ -27,6 +22,12 @@ public class EmployeePayrollService {
 		System.out.println("Enter the employee salary");
 		double salary = consoleInput.nextDouble();
 		employeeList.add(new Employee(id,name,salary));
+	}
+	public static void main(String[] args) {
+		EmployeePayrollService eService = new EmployeePayrollService();
+		Scanner consoleInput = new Scanner(System.in);
+		eService.readEmployeePayrollData(consoleInput);
+		eService.writeData();
 	}
 }
 
