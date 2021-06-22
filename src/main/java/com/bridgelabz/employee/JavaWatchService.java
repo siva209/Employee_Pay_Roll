@@ -40,7 +40,7 @@ public class JavaWatchService {
 		});
 	}
 		@SuppressWarnings("unchecked")
-		void processEvents() throws IOException {
+		public void processEvents() throws IOException {
 			while(true) {
 				WatchKey key = null;
 				try {
