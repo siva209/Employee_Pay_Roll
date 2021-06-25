@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class EmployeePayrollDBService {
 	@SuppressWarnings("unused")
@@ -46,4 +47,28 @@ public class EmployeePayrollDBService {
 		}
 		return employeeData;
 	}
-}
+	
+	//Using Statement
+		private int updateEmployeeUsingStatement(String name, double salary) throws DatabaseException {
+			String sql = String.format("Update employee_payroll set salary = %.2f where name = '%s';",salary, name);
+			try(Connection connection = this.getConnection()){
+				Statement statement = connection.createStatement();
+				return	statement.executeUpdate(sql);
+			}
+			catch(DatabaseException exception) {
+				System.out.println(exception);
+			}
+			catch(Exception exception) {
+				throw new DatabaseException("Unable to update");
+			}
+			return 0;
+		}
+		public List<Employee> getEmployeeData(String name) throws DatabaseException{
+			return readData().stream().filter(employee -> employee.name.equals(name)).collect(Collectors.toList());
+		}
+		//Update records
+		public int updateEmployeeData(String name, double salary) throws DatabaseException {
+			return this.updateEmployeeUsingStatement(name, salary);
+		}
+	}
+	
