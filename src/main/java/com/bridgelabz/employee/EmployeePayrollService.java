@@ -13,6 +13,11 @@ public class EmployeePayrollService {
 	public EmployeePayrollService(List<Employee> list) {
 		this.employeeList = list;
 	}
+	 public EmployeePayrollService() {
+		// TODO Auto-generated constructor stub
+	}
+	private List<Employee> employeList = new ArrayList<>();
+	    
 	
 	public void writeData(IOService ioService) {
 		if (ioService.equals(IOService.CONSOLE_IO))
@@ -44,6 +49,12 @@ public class EmployeePayrollService {
 			new EmployeeFileService().printData();
 		}
 	}
+	 public void readDataFromFile(IOService ioService){
+	        if(ioService.equals(IOService.CONSOLE_IO)){
+	            new EmployeeFileService().readData();
+	        }
+	    }
+
 	
 	public static void main(String[] args) {
 		ArrayList<Employee> list = new ArrayList<Employee>();
