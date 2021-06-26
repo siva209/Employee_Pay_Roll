@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.bridgelabz.employee.DatabaseException;
 import com.bridgelabz.employee.Employee;
 import com.bridgelabz.employee.EmployeePayrollService;
+import com.bridgelabz.employee.EmployeePayrollService.IOService;
 
 public class EmployeePayRollTest {
 	@Test
@@ -87,13 +88,13 @@ public class EmployeePayRollTest {
 		public void givenEmployees_WhenRetrievedAverage_ShouldReturnTrue() throws DatabaseException {
 			EmployeePayrollService eService = new EmployeePayrollService();
 			eService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
-			assertTrue(eService.getEmployeeAverageByGender().get("M").equals(2000000.0));
+			assertTrue(eService.getEmployeeAverageByGender().get("M").equals(3000000.0));
 		}
 		@Test
 		public void givenEmployees_WhenRetrievedMaximumSalaryByGender_ShouldReturnTrue() throws DatabaseException {
 			EmployeePayrollService eService = new EmployeePayrollService();
 			eService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
-			assertTrue(eService.getEmployeeMaximumSalaryByGender().get("M").equals(2000000.0));
+			assertTrue(eService.getEmployeeMaximumSalaryByGender().get("M").equals(5000000.0));
 		}
 		@Test
 		public void givenEmployees_WhenRetrievedMinimumSalaryByGender_ShouldReturnTrue() throws DatabaseException {
@@ -105,16 +106,32 @@ public class EmployeePayRollTest {
 		public void givenEmployees_WhenRetrievedSumByGender_ShouldReturnTrue() throws DatabaseException {
 			EmployeePayrollService eService = new EmployeePayrollService();
 			eService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
-			assertTrue(eService.getEmployeeSumByGender().get("M").equals(4000000.0));
+			assertTrue(eService.getEmployeeSumByGender().get("M").equals(9000000.0));
 		}
 		@Test
 		public void givenEmployees_WhenRetrievedCountByGender_ShouldReturnTrue() throws DatabaseException {
 			EmployeePayrollService eService = new EmployeePayrollService();
 			eService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
 			System.out.println(eService.getEmployeeAverageByGender().get("M"));
-			assertTrue(eService.getEmployeeCountByGender().get("M").equals(2.0));
+			assertTrue(eService.getEmployeeCountByGender().get("M").equals(3.0));
 		}
-}
+		@Test
+		public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws SQLException, DatabaseException {
+			EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+			employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+			employeePayrollService.addEmployeeToPayroll("Mark", "M", 5000000.0, LocalDate.now());
+			boolean result = employeePayrollService.checkEmployeeDataSync("Mark");
+			assertEquals(true, result);
+		}
+		@Test
+		public void givenEmployeeDB_WhenAnEmployeeIsDeleted_ShouldSyncWithDB() throws DatabaseException {
+			EmployeePayrollService employeeService = new EmployeePayrollService();
+			employeeService.readEmployeePayrollData(IOService.DB_IO);
+			List<Employee> list = employeeService.deleteEmployee("Mark");
+			assertEquals(3, list.size());
+		}
+		}
+
 	
 
 	
