@@ -29,14 +29,10 @@ public class Employee {
 		if (getClass() != obj.getClass())
 			return false;
 		Employee other = (Employee) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!this.name.equals(other.name))
+		if (id != other.id)
+			return false;
+		if (Double.doubleToLongBits(salary) != Double.doubleToLongBits(other.salary))
 			return false;
 		return true;
 	}	
 }
-
-
-
