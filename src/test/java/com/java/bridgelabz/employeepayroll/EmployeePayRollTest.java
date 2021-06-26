@@ -130,6 +130,14 @@ public class EmployeePayRollTest {
 			List<Employee> list = employeeService.deleteEmployee("Mark");
 			assertEquals(3, list.size());
 		}
+		@Test
+		public void givenNewEmployee_WhenAddedToPayroll_ShouldBeAddedToDepartment() throws SQLException, DatabaseException {
+			EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+			employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+			employeePayrollService.addEmployeeToDepartment("Max", "M", 4000000.0, LocalDate.now(), "Sales");
+			boolean result = employeePayrollService.checkEmployeeDataSync("Max");
+			assertEquals(true, result);
+		}
 		}
 
 	
