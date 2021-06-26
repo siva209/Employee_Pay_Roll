@@ -62,7 +62,7 @@ public class EmployeePayRollTest {
 			employees = eService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
 			eService.updateEmployeeSalary("Terisa", 6000000);
 			boolean result = eService.checkEmployeeDataSync("Terisa");
-			System.out.println(result);
+//			System.out.println(result);
 			assertTrue(result);
 		}
 		@Test
@@ -81,6 +81,38 @@ public class EmployeePayRollTest {
 			LocalDate end = LocalDate.now();
 			employees = eService.getEmployeeByDate(start, end);
 			assertEquals(2, employees.size());
+		}
+		
+		@Test
+		public void givenEmployees_WhenRetrievedAverage_ShouldReturnTrue() throws DatabaseException {
+			EmployeePayrollService eService = new EmployeePayrollService();
+			eService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
+			assertTrue(eService.getEmployeeAverageByGender().get("M").equals(2000000.0));
+		}
+		@Test
+		public void givenEmployees_WhenRetrievedMaximumSalaryByGender_ShouldReturnTrue() throws DatabaseException {
+			EmployeePayrollService eService = new EmployeePayrollService();
+			eService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
+			assertTrue(eService.getEmployeeMaximumSalaryByGender().get("M").equals(2000000.0));
+		}
+		@Test
+		public void givenEmployees_WhenRetrievedMinimumSalaryByGender_ShouldReturnTrue() throws DatabaseException {
+			EmployeePayrollService eService = new EmployeePayrollService();
+			eService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
+			assertTrue(eService.getEmployeeMinimumSalaryByGender().get("M").equals(2000000.0));
+		}
+		@Test
+		public void givenEmployees_WhenRetrievedSumByGender_ShouldReturnTrue() throws DatabaseException {
+			EmployeePayrollService eService = new EmployeePayrollService();
+			eService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
+			assertTrue(eService.getEmployeeSumByGender().get("M").equals(4000000.0));
+		}
+		@Test
+		public void givenEmployees_WhenRetrievedCountByGender_ShouldReturnTrue() throws DatabaseException {
+			EmployeePayrollService eService = new EmployeePayrollService();
+			eService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
+			System.out.println(eService.getEmployeeAverageByGender().get("M"));
+			assertTrue(eService.getEmployeeCountByGender().get("M").equals(2.0));
 		}
 }
 	
