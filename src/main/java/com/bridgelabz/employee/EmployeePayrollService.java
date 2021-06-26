@@ -143,5 +143,5 @@ public class EmployeePayrollService {
 	public List<Employee> deleteEmployee(String name) throws DatabaseException {
 		employeePayrollDBService.deleteEmployee(name);
 		return readEmployeePayrollData(IOService.DB_IO);
-	}	
+	}		
 }
