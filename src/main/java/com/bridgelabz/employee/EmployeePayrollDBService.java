@@ -7,7 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.sql.Date;
 
 public class EmployeePayrollDBService {
@@ -37,7 +40,7 @@ public class EmployeePayrollDBService {
 		String password = "siva";
 		Connection connection;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
+			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection(jdbcurl, userName, password);
 			String sql = "Select * from employee_payroll where name = ?;";
 			preparedStatement = connection.prepareStatement(sql);
@@ -56,6 +59,24 @@ public class EmployeePayrollDBService {
 	public List<Employee> readDataForGivenDateRange(LocalDate start, LocalDate end) throws DatabaseException{
 		String sql = String.format("Select * from employee_payroll where start between '%s' and '%s' ;", Date.valueOf(start), Date.valueOf(end));
 	    return getEmployeeRecords(sql);
+	}
+	//get employee records by condition
+	public Map<String,Double> getEmployeesByFunction(String function) throws  DatabaseException{
+		Map<String,Double> employeeAverage = new HashMap<>();
+		String sql = String.format("Select gender, %s(salary) from employee_payroll group by gender ; ",function) ;
+		try {
+			Statement statement = getConnection().createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			while(result.next()) {
+				String gender = result.getString(1);
+				Double salary = result.getDouble(2);
+				employeeAverage.put(gender, salary);
+			}
+		}
+		catch(SQLException exception) {
+			throw new DatabaseException("Unable to calculate");
+		}
+		return employeeAverage;
 	}
 	//Read all records satisfying a given query
 	private List<Employee> getEmployeeRecords(String sql) throws DatabaseException {
