@@ -5,11 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.*;
 
-import org.junit.Assert;
+
 import org.junit.Test;
 
+import com.bridgelabz.employee.DatabaseException;
 import com.bridgelabz.employee.Employee;
 import com.bridgelabz.employee.EmployeePayrollService;
 
@@ -54,7 +56,7 @@ public class EmployeePayRollTest {
 			assertEquals(3, employees.size());
 		}
 		@Test
-		public void givenDatabase_WhenUpdated_ShouldBeInSync() throws SQLException {
+		public void givenDatabase_WhenUpdated_ShouldBeInSync() throws SQLException, DatabaseException {
 			List<Employee> employees = new ArrayList<>();
 			EmployeePayrollService eService = new EmployeePayrollService(employees);
 			employees = eService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
@@ -70,7 +72,17 @@ public class EmployeePayRollTest {
 			employees = eService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
 			assertTrue(eService.checkEmployeeDataSync("Terisa"));
 		}
-	}
+		@Test
+		public void givenDateRange_WhenRetrieved_ShouldMatchEmployeeCount() throws DatabaseException {
+			List<Employee> employees = new ArrayList<>();
+			EmployeePayrollService eService = new EmployeePayrollService();
+			eService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
+			LocalDate start = LocalDate.of(2018, 01, 01);
+			LocalDate end = LocalDate.now();
+			employees = eService.getEmployeeByDate(start, end);
+			assertEquals(2, employees.size());
+		}
+}
 	
 
 	
