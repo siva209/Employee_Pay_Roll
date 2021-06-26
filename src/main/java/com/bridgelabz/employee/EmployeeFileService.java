@@ -49,7 +49,7 @@ public class EmployeeFileService {
 				String[] newData = new String[10];
 				int index = 0;
 				for (String d : data) {
-					String[] splitData = d.split("(=)");
+					String[] splitData = d.split("(= )");
 					newData[index] = splitData[1];
 					index++;
 				}
@@ -62,6 +62,6 @@ public class EmployeeFileService {
 		return list;
 	}
 }
-	
+
 
 
