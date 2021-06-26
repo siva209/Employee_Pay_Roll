@@ -117,6 +117,10 @@ public class EmployeePayrollService {
 	public Map<String, Double> getEmployeeCountByGender() throws DatabaseException{
 		return employeePayrollDBService.getEmployeesByFunction("COUNT");
 	}
+	//Add Employee to Payroll
+	public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate start) throws SQLException, DatabaseException {
+		this.employeeList.add(employeePayrollDBService.addEmployeeToPayroll(name, gender, salary, start));
+	}
 	public void printData(IOService ioService) {
 		if (ioService.equals(IOService.FILE_IO)) {
 			new EmployeeFileService().printData();
@@ -136,4 +140,8 @@ public class EmployeePayrollService {
 		System.out.println("No of Entries in File: " + entries);
 		return entries;
 	}
+	public List<Employee> deleteEmployee(String name) throws DatabaseException {
+		employeePayrollDBService.deleteEmployee(name);
+		return readEmployeePayrollData(IOService.DB_IO);
+	}	
 }
