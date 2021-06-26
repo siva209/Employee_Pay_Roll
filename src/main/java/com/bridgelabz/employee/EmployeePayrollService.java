@@ -1,5 +1,6 @@
 package com.bridgelabz.employee;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -64,11 +65,11 @@ public class EmployeePayrollService {
 		return list;
 	}
 	//Update Employee Records
-	public void updateEmployeeSalary(String name, double salary) throws SQLException {
+	public void updateEmployeeSalary(String name, double salary) throws DatabaseException {
 		int result = 0;
 		try {
 			result = employeePayrollDBService.updateEmployeeData(name,salary);
-		} catch (DatabaseException exception) {
+		} catch (SQLException exception) {
 			System.out.println(exception);
 		}
 		if(result == 0) return;
@@ -95,6 +96,10 @@ public class EmployeePayrollService {
 			System.out.println(exception);
 		}
 		return employees.get(0).equals(getEmployee(name));
+	}
+	//get Employees for a given date range
+	public List<Employee> getEmployeeByDate(LocalDate start, LocalDate end) throws DatabaseException {
+		return employeePayrollDBService.readDataForGivenDateRange(start, end);
 	}
 	public void printData(IOService ioService) {
 		if (ioService.equals(IOService.FILE_IO)) {

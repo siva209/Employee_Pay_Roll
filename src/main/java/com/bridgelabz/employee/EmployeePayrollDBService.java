@@ -8,10 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.sql.Date;
 
 public class EmployeePayrollDBService {
-	
 	
 	private PreparedStatement preparedStatement = null;
 	private static EmployeePayrollDBService employeePayrollDBService;
@@ -24,6 +23,7 @@ public class EmployeePayrollDBService {
 		}
 		return employeePayrollDBService;
 	}
+	//Cached prepared Statement
 	private void getPreparedStatement() throws SQLException, DatabaseException {
 		Connection connection = this.getConnection();
 		if(preparedStatement == null) {
@@ -31,11 +31,6 @@ public class EmployeePayrollDBService {
 		preparedStatement = connection.prepareStatement(sql);
 		}
 	}
-	
-	
-	
-	
-	
 	private Connection getConnection() throws DatabaseException {
 		String jdbcurl = "jdbc:mysql://localhost:3306/payroll_service";
 		String userName = "siva";
@@ -52,20 +47,23 @@ public class EmployeePayrollDBService {
 		}
 		return connection;
 	}
-	
+	//read all records
 	public List<Employee> readData() throws DatabaseException {
 		String sql = "Select * from employee_payroll; ";
+		return getEmployeeRecords(sql);
+	}
+	//Read records for a given date range
+	public List<Employee> readDataForGivenDateRange(LocalDate start, LocalDate end) throws DatabaseException{
+		String sql = String.format("Select * from employee_payroll where start between '%s' and '%s' ;", Date.valueOf(start), Date.valueOf(end));
+	    return getEmployeeRecords(sql);
+	}
+	//Read all records satisfying a given query
+	private List<Employee> getEmployeeRecords(String sql) throws DatabaseException {
 		List<Employee> employeeData = new ArrayList<>();
 		try(Connection connection = this.getConnection();){
 			Statement statement = connection.createStatement();
 			ResultSet result = statement.executeQuery(sql);
-			while(result.next()) {
-				int id = result.getInt("id");
-				String name = result.getString("name");
-				double salary = result.getDouble("salary");
-				LocalDate start = result.getDate("start").toLocalDate();
-				employeeData.add(new Employee(id, name, salary, start));
-			}
+			employeeData = getEmployeeData(result);
 		}
 			catch(DatabaseException exception) {
 				System.out.println(exception);
@@ -75,7 +73,7 @@ public class EmployeePayrollDBService {
 		}
 		return employeeData;
 	}
-	
+	//Update salary
 	private int updateEmployeeUsingPreparedStatement(String name, double salary) throws DatabaseException, SQLException {
 		Connection connection = this.getConnection();
 		String sql = "Update employee_payroll set salary = ? where name = ? ; " ; 
@@ -84,6 +82,7 @@ public class EmployeePayrollDBService {
 		prepareStatement.setDouble(1, salary);
 		return prepareStatement.executeUpdate();
 	}
+	//Get Employee Records for a given name
 	public List<Employee> getEmployeeData(String name) throws DatabaseException{
 		try {
 			getPreparedStatement();
@@ -97,6 +96,7 @@ public class EmployeePayrollDBService {
 	public int updateEmployeeData(String name, double salary) throws DatabaseException, SQLException {
 		return this.updateEmployeeUsingPreparedStatement(name, salary);
 	}
+	//Get the resultSet
 	public List<Employee> getEmployeeData(ResultSet result) throws DatabaseException{
 		List<Employee> employeeData = new ArrayList<Employee>();
 		try {
