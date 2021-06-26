@@ -1,15 +1,20 @@
 package com.bridgelabz.employee;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 
 public class EmployeePayrollService {
+	static EmployeePayrollDBService employeePayrollDBService;
 	static Scanner consoleInput = new Scanner(System.in);
 	public enum IOService {
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
 	};
 	private List<Employee> employeeList;
+	public EmployeePayrollService() {
+		employeePayrollDBService = EmployeePayrollDBService.getInstance();
+	}
 	public EmployeePayrollService(List<Employee> list) {
 		this.employeeList = list;
 	}
@@ -49,20 +54,20 @@ public class EmployeePayrollService {
 		//Reading Data from the Database
 		else if(ioService.equals(IOService.DB_IO)) {
 			try {
-				list = new EmployeePayrollDBService().readData();
+				list = employeePayrollDBService.readData();
 			} catch (DatabaseException exception) {
 				System.out.println(exception);
 			}
 			System.out.println("Reading data from database" + list);
+			this.employeeList = list;
 		}
-		this.employeeList = list;
 		return list;
 	}
 	//Update Employee Records
-	public void updateEmployeeSalary(String name, double salary) {
+	public void updateEmployeeSalary(String name, double salary) throws SQLException {
 		int result = 0;
 		try {
-			result = new EmployeePayrollDBService().updateEmployeeData(name,salary);
+			result = employeePayrollDBService.updateEmployeeData(name,salary);
 		} catch (DatabaseException exception) {
 			System.out.println(exception);
 		}
@@ -84,13 +89,11 @@ public class EmployeePayrollService {
 	public boolean checkEmployeeDataSync(String name) {
 		List<Employee> employees = null;
 		try {
-			employees = new EmployeePayrollDBService().getEmployeeData(name);
-		} catch (DatabaseException exception) {
-	
+			employees = employeePayrollDBService.getEmployeeData(name);
+		}
+		catch (DatabaseException exception) {
 			System.out.println(exception);
 		}
-		System.out.println(employees);
-		System.out.println(getEmployee(name));
 		return employees.get(0).equals(getEmployee(name));
 	}
 	public void printData(IOService ioService) {
@@ -112,5 +115,4 @@ public class EmployeePayrollService {
 		System.out.println("No of Entries in File: " + entries);
 		return entries;
 	}
-
 }
