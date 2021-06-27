@@ -244,5 +244,7 @@ public class EmployeePayrollService {
 		}
 		return true;
 	}
-
+	public void addEmployeeToPayroll(Employee employee) {
+		employeeList.add(employee);
+	}
 }

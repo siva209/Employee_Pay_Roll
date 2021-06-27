@@ -33,8 +33,8 @@ public class EmployeePayrollDBService {
 	}
 	private synchronized Connection getConnection() throws DatabaseException {
 		String jdbcurl = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
-		String userName = "siva";
-		String password = "siva";
+		String userName = "root";
+		String password = "Shivam99@";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			LOG.info("Processing Thread: "+ Thread.currentThread().getName() +
