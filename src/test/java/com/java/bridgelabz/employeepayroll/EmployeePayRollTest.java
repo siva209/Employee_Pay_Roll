@@ -10,13 +10,18 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 
-
+import org.junit.Before;
 import org.junit.Test;
 
 import com.bridgelabz.employee.DatabaseException;
 import com.bridgelabz.employee.Employee;
 import com.bridgelabz.employee.EmployeePayrollService;
 import com.bridgelabz.employee.EmployeePayrollService.IOService;
+import com.google.gson.Gson;
+
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 
 public class EmployeePayRollTest {
 	@Test
@@ -181,7 +186,42 @@ public class EmployeePayRollTest {
 			boolean result = employeePayrollService.checkEmployeeListSync(Arrays.asList("Bill Gates,Mukesh"));
 			assertEquals(true,result);
 		}
+		
+		
+		@Before
+		public void setup() {
+			RestAssured.baseURI = "http://localhost";
+			RestAssured.port = 3000;
+		}
+		private Employee[] getEmployeeList() {
+			Response response = RestAssured.get("/employees");
+			System.out.println("Employee payroll entries in JSONServer:\n"+response.asString());
+			Employee[] arrayOfEmp = new Gson().fromJson(response.asString(),Employee[].class);
+			return arrayOfEmp;
+		}
+		private Response addEmployeeToJsonServer(Employee employee) {
+			String empJson = new Gson().toJson(employee);
+			RequestSpecification request = RestAssured.given();
+			request.header("Content-Type","application/json");
+			request.body(empJson);
+			return request.post("/employees");
+		}
+		@Test
+		public void givenNewEmployee_WhenAdded_ShouldMatch201ResponseAndCount() {
+			Employee[] arrayOfEmp = getEmployeeList();
+			EmployeePayrollService eService = new EmployeePayrollService(Arrays.asList(arrayOfEmp));
+			Employee employee = null; 
+			employee = new Employee(0,"Mark Zuckerberg","M",3000000.0,LocalDate.now());
+			Response response = addEmployeeToJsonServer(employee);
+			int statusCode = response.getStatusCode();
+			assertEquals(201,statusCode);
+			employee = new Gson().fromJson(response.asString(), Employee.class);
+			eService.addEmployeeToPayroll(employee);
+			long count = eService.countEntries(IOService.REST_IO);
+			assertEquals(3,count);	
+		}
 	}
+	
 
 		
 	
