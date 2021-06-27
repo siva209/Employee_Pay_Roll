@@ -136,8 +136,11 @@ public class EmployeePayrollService {
 		long entries = 0;
 		if (ioService.equals(IOService.FILE_IO)) {
 			entries = new EmployeeFileService().countEntries();
+			System.out.println("No of Entries in File: " + entries);
 		}
-		System.out.println("No of Entries in File: " + entries);
+		if(ioService.equals(IOService.DB_IO)) {
+			entries= employeeList.size();
+		}
 		return entries;
 	}
 	public List<Employee> deleteEmployee(String name) throws DatabaseException {
@@ -148,5 +151,14 @@ public class EmployeePayrollService {
 		List<Employee> activeEmployees = null;
 		activeEmployees = employeePayrollDBService.removeEmployeeFromCompany(id);
 		return activeEmployees;
+	}
+	public void addEmployeesToPayroll(List<Employee> asList) {
+		employeeList.forEach(employee -> {
+			try {
+				this.addEmployeeToPayrollAndDepartment(employee.name,employee.gender,employee.salary,employee.start,employee.department);
+			} catch (SQLException | DatabaseException e) {
+				e.printStackTrace();
+			}
+		});
 	}	
 }

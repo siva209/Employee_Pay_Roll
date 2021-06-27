@@ -16,6 +16,7 @@ import java.sql.Date;
 public class EmployeePayrollDBService {
 	private PreparedStatement preparedStatement = null;
 	private static EmployeePayrollDBService employeePayrollDBService;
+	private static Connection connection = null;
 	private EmployeePayrollDBService() {
 	}
 	//Singleton Object
@@ -27,17 +28,19 @@ public class EmployeePayrollDBService {
 	}
 	//Cached prepared Statement
 	private void getPreparedStatement() throws SQLException, DatabaseException {
-		Connection connection = this.getConnection();
+		this.getConnection();
 		if(preparedStatement == null) {
 			String sql = "Select * from employee_payroll where name = ?;";
 		preparedStatement = connection.prepareStatement(sql);
 		}
 	}
 	private Connection getConnection() throws DatabaseException {
-		String jdbcurl = "jdbc:mysql://localhost:3306/payroll_service";
+		if(connection != null) {
+			return connection;
+		}
+		String jdbcurl = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
 		String userName = "siva";
 		String password = "siva";
-		Connection connection;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection(jdbcurl, userName, password);
@@ -165,7 +168,7 @@ public class EmployeePayrollDBService {
 		try (Statement statement = connection.createStatement()) {
 			String sql = String.format("INSERT INTO employee_payroll_service (name, gender, salary, start) "
 					+ "VALUES ('%s','%s','%s','%s')", name, gender, salary, Date.valueOf(start));
-			int rowAffected = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
+			int rowAffected = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 			if (rowAffected == 1) {
 				ResultSet resultSet = statement.getGeneratedKeys();
 				if (resultSet.next())
@@ -199,9 +202,9 @@ public class EmployeePayrollDBService {
 		}
 		try (Statement statement = connection.createStatement()) {
 			String sql = String.format(
-					"INSERT INTO department (employee_id,department_id, department_name) "
-							+ "VALUES ('%s','%s','%s')",
-					employeeId,1, department);
+					"INSERT INTO department (employee_id,department_name) "
+							+ "VALUES ('%s','%s')",
+					employeeId,department);
 			int rowAffected = statement.executeUpdate(sql);
 			if(rowAffected == 1) {
 				employee = new Employee(employeeId, name, gender, salary,start, department);
