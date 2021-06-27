@@ -2,6 +2,7 @@ package com.bridgelabz.employee;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -154,11 +155,40 @@ public class EmployeePayrollService {
 	}
 	public void addEmployeesToPayroll(List<Employee> asList) {
 		employeeList.forEach(employee -> {
+			System.out.println("Employee Being added: "+employee.name);
 			try {
 				this.addEmployeeToPayrollAndDepartment(employee.name,employee.gender,employee.salary,employee.start,employee.department);
 			} catch (SQLException | DatabaseException e) {
 				e.printStackTrace();
 			}
+			System.out.println("Employee added: "+employee.name);
 		});
+		System.out.println(this.employeeList);
 	}	
+	public void addEmployeesToPayrollWithThreads(List<Employee> employeeDataList) {
+		Map<Integer, Boolean> employeeAdditionStatus = new HashMap<Integer, Boolean>();
+		employeeDataList.forEach(employee -> {
+			Runnable task = () -> {
+				employeeAdditionStatus.put(employee.hashCode(), false);
+				System.out.println("Employee Being Added: "+ Thread.currentThread().getName());
+				try {
+					this.addEmployeeToPayrollAndDepartment(employee.name,employee.gender,employee.salary,
+					                                       employee.start,employee.department);
+				} catch (SQLException | DatabaseException e) {
+					e.printStackTrace();
+				}
+				employeeAdditionStatus.put(employee.hashCode(), true);
+				System.out.println("Employee Added: "+ Thread.currentThread().getName());
+			};
+			Thread thread = new Thread(task, employee.name);
+			thread.start();
+		});
+		while(employeeAdditionStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
