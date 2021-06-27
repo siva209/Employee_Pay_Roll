@@ -1,6 +1,7 @@
 package com.bridgelabz.employee;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Employee {
 	public String name;
@@ -9,6 +10,7 @@ public class Employee {
 	public LocalDate start;
 	public String gender;
 	public String department;
+	public boolean is_active = true;
 	public Employee(int id, String name, double salary) {
 		this.name = name;
 		this.id = id;
@@ -45,4 +47,8 @@ public class Employee {
 			return false;
 		return true;
 	}	
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, gender, salary, start);
+	}
 }
