@@ -138,4 +138,11 @@ public class EmployeePayRollTest {
 			boolean result = employeePayrollService.checkEmployeeDataSync("Max");
 			assertEquals(true, result);
 		}
+		@Test
+		void givenEmployeeId_WhenRemoved_shouldReturnNumberOfActiveEmployees() throws DatabaseException {
+			EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+			List<Employee> ActiveEmployees = employeePayrollService.removeEmployeeFromPayroll(3);
+			assertEquals(3, ActiveEmployees.size());
+		}
+		
 	}
